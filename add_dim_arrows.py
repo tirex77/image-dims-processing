@@ -119,14 +119,21 @@ def auto_annotate_product(image_path, output_path, font_path=None):
 
     # === ЭТАП 2: ДОБАВЛЯЕМ ДИСКЛЕЙМЕР ===
     # Вычисляем самую нижнюю точку, которую заняли стрелки
-    # Это либо низ линии L (l_y + 12), либо низ текста W
-    lowest_point = max(l_y + 20, w_end[1] + 20)
+    # Учитываем: линию L с засечками, текст L, текст W
+    w_text_bbox = draw.textbbox((0, 0), "W 15", font=font_dim)
+    l_text_bbox = draw.textbbox((0, 0), "L 21", font=font_dim)
+    
+    lowest_point = max(
+        l_y + 12,                    # низ засечек линии L
+        l_y + 15 + l_text_bbox[3],   # низ текста L
+        w_end[1] - 5 + w_text_bbox[3]  # низ текста W
+    )
 
     # Дисклеймер
     disclaimer = "В комплект поставки входит только товар как на этом фото прочие дополнительные аксессуары использованы в медиа материалах исключительно в художественных и рекламных целях"
     lines = textwrap.wrap(disclaimer, width=100)
 
-    # Начинаем рисовать текст с отступом 40px от самой нижней стрелки
+    # Начинаем рисовать текст с отступом 50px от самой нижней точки размеров
     current_y = lowest_point + 50
 
     for line in lines:
