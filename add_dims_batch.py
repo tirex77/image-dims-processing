@@ -127,7 +127,16 @@ def auto_annotate_product(img, output_path, font_path=None):
     draw.text((w_end[0] + 5, w_end[1] - 5), "W 15", fill=color, font=font_dim)
 
     # === ДИСКЛЕЙМЕР (Динамический отступ) ===
-    lowest_point = max(l_y + 20, w_end[1] + 20)
+    # Вычисляем самую нижнюю точку с учётом всех элементов размеров
+    w_text_bbox = draw.textbbox((0, 0), "W 15", font=font_dim)
+    l_text_bbox = draw.textbbox((0, 0), "L 21", font=font_dim)
+    
+    lowest_point = max(
+        l_y + 12,                    # низ засечек линии L
+        l_y + 15 + l_text_bbox[3],   # низ текста L
+        w_end[1] - 5 + w_text_bbox[3]  # низ текста W
+    )
+    
     current_y = lowest_point + 50  # Отступ 50px
 
     disclaimer = "В комплект поставки входит только товар как на этом фото прочие дополнительные аксессуары использованы в медиа материалах исключительно в художественных и рекламных целях"
